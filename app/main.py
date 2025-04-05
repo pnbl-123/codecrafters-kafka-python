@@ -2,20 +2,25 @@
 import socket
 import struct
 
+def parse_header(b_msg):
+    pass
+
 def handle_client(conn):
     try:
-        # Receive data (we don't care about the content for this task)
-        data = conn.recv(1024)
+        REQUEST_SIZE = 4 * 3 # header size
+        data = conn.recv(REQUEST_SIZE)
         print(f"Received: {data}")
+        
+        print("test unpack")
+        msg_size, req_api_key, req_api_ver, cor_id = struct.unpack(">ihhi", data)
+        print(f"cor_id=",msg_size, req_api_key, req_api_ver, cor_id)
+        
 
-        # Construct the response
         message_size = 0
         correlation_id = 7
 
-        # Pack the response in big-endian order
-        response = struct.pack(">ii", message_size, correlation_id) # ii = integer, integer
+        response = struct.pack(">ii", message_size, correlation_id)
 
-        # Send the response
         conn.sendall(response)
         print(f"Sent: {response}")
 
@@ -30,7 +35,7 @@ def main():
     port = 9092
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # Avoid "Address already in use"
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind((host, port))
     sock.listen(1)
 
