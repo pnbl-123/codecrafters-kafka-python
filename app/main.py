@@ -13,7 +13,9 @@ def handle_client(conn):
         api_key, api_version = struct.unpack(">hh", body[:4])
         correlation_id = struct.unpack(">i", body[4:8])[0]
         
-        response = struct.pack(">ii", 0, correlation_id)
+        err_code = 35
+        
+        response = struct.pack(">iih", msg_size, correlation_id, err_code)
         conn.sendall(response)
         
     except Exception as e:
