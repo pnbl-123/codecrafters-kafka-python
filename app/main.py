@@ -13,13 +13,8 @@ def handle_client(conn):
         
         print("test unpack")
         msg_size, req_api_key, req_api_ver, cor_id = struct.unpack(">ihhi", data)
-        print(f"cor_id=",msg_size, req_api_key, req_api_ver, cor_id)
-        
 
-        message_size = 0
-        correlation_id = 7
-
-        response = struct.pack(">ii", message_size, correlation_id)
+        response = struct.pack(">ii", msg_size, cor_id)
 
         conn.sendall(response)
         print(f"Sent: {response}")
