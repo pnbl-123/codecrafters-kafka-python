@@ -2,23 +2,20 @@
 import socket
 import struct
 
-def parse_header(b_msg):
-    pass
 
 def handle_client(conn):
     try:
-        REQUEST_SIZE = 4 * 3 # header size
-        data = conn.recv(REQUEST_SIZE)
-        print(f"Received: {data}")
+        size_data = conn.recv(4)
+        msg_size = struct.unpack(">i", size_data)[0]
         
-        print("test unpack")
-        msg_size, req_api_key, req_api_ver, cor_id = struct.unpack(">ihhi", data)
-
-        response = struct.pack(">ii", msg_size, cor_id)
-
+        body = conn.recv(msg_size)
+        
+        api_key, api_version = struct.unpack(">hh", body[:4])
+        correlation_id = struct.unpack(">i", body[4:8])[0]
+        
+        response = struct.pack(">ii", 0, correlation_id)
         conn.sendall(response)
-        print(f"Sent: {response}")
-
+        
     except Exception as e:
         print(f"Error: {e}")
     finally:
